@@ -1,12 +1,13 @@
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 import smtplib
 from email.mime.text import MIMEText
 import os
-#sebaslondotabor@gmail.com
+
 # ✉️ Función para enviar el correo
 def enviar_mail(disponibles):
     msg = MIMEText(f"Hay {disponibles} prácticas disponibles en PracticaVial")
@@ -18,37 +19,42 @@ def enviar_mail(disponibles):
         server.login(os.getenv("GMAIL_USER"), os.getenv("GMAIL_PASS"))
         server.send_message(msg)
 
+# Configuración del navegador sin interfaz
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
 
-# Configura el WebDriver
-driver = webdriver.Chrome()  # Asegúrate de que chromedriver esté en tu PATH
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+
+# Accede a la web
 driver.get("https://app.practicavial.com/")
-
-# Espera a que la página cargue completamente
 time.sleep(2)
 
-# Encuentra los campos de correo electrónico y contraseña e ingresa tus credenciales
-email_input = driver.find_element(By.ID, "username_input")  # Ajusta según el atributo 'name' real
-password_input = driver.find_element(By.NAME, "password")  # Ajusta según el atributo 'name' real
+# Login
+email_input = driver.find_element(By.ID, "username_input")
+password_input = driver.find_element(By.NAME, "password")
 
-email_input.send_keys("sebaslondotabor@gmail.com")
-password_input.send_keys("7ikrL")
+email_input.send_keys(os.getenv("PV_USER"))       # Usa variable de entorno
+password_input.send_keys(os.getenv("PV_PASS"))    # Usa variable de entorno
 password_input.send_keys(Keys.RETURN)
 
-# Espera a que la sesión se inicie y la página redirija
 time.sleep(2)
 
-# Ahora estás autenticado y puedes navegar a la página de prácticas
+# Ir a calendario
 driver.get("https://app.practicavial.com/mi-calendario")
 time.sleep(2)
 
-# Aquí puedes agregar el código para verificar la disponibilidad de prácticas
-disponibles = driver.find_element(By.CLASS_NAME, "available-example").text
-disponibles = int(disponibles.strip())  
+# Revisar prácticas disponibles
+try:
+    disponibles = driver.find_element(By.CLASS_NAME, "available-example").text
+    disponibles = int(disponibles.strip())
+    print(f"Hay {disponibles} prácticas disponibles")
 
-if disponibles >= 0:
-    enviar_mail(disponibles)
-    # Aquí más adelante agregaremos lógica para reservar automáticamente
+    if disponibles > 0:
+        enviar_mail(disponibles)
 
-time.sleep(2)
-# No olvides cerrar el navegador al finalizar
+except Exception as e:
+    print("Error al revisar disponibilidad:", e)
+
 driver.quit()
