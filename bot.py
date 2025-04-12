@@ -5,17 +5,17 @@ from selenium.webdriver.common.keys import Keys
 import time
 import smtplib
 from email.mime.text import MIMEText
-
+import os
 #sebaslondotabor@gmail.com
 # ✉️ Función para enviar el correo
 def enviar_mail(disponibles):
     msg = MIMEText(f"Hay {disponibles} prácticas disponibles en PracticaVial")
     msg["Subject"] = "🚘 Prácticas disponibles"
-    msg["From"] = "sebaslondotabor@gmail.com"
-    msg["To"] = "sebaslondotabor@gmail.com"
+    msg["From"] = os.getenv("GMAIL_USER")
+    msg["To"] = os.getenv("GMAIL_USER")
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login("sebaslondotabor@gmail.com", "evtj fgnq gwut xizo")
+        server.login(os.getenv("GMAIL_USER"), os.getenv("GMAIL_PASS"))
         server.send_message(msg)
 
 
