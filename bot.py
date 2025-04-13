@@ -9,6 +9,15 @@ from email.mime.text import MIMEText
 import os
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+import subprocess
+
+# Instalar Chromium y dependencias necesarias
+def instalar_chrome():
+    subprocess.run(["apt-get", "update"])
+    subprocess.run(["apt-get", "install", "-y", "chromium-browser"])
+
+# Llamamos a la función para instalar Chrome en el entorno de Render
+instalar_chrome()
 
 # ✉️ Función para enviar el correo
 def enviar_mail(disponibles): 
