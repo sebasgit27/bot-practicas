@@ -7,9 +7,11 @@ import time
 import smtplib
 from email.mime.text import MIMEText
 import os
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
 # ✉️ Función para enviar el correo
-def enviar_mail(disponibles):
+def enviar_mail(disponibles): 
     msg = MIMEText(f"Hay {disponibles} prácticas disponibles en PracticaVial")
     msg["Subject"] = "🚘 Prácticas disponibles"
     msg["From"] = os.getenv("GMAIL_USER")
@@ -25,7 +27,11 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 
-driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
+# Crea el servicio con el controlador
+service = Service(ChromeDriverManager().install())
+
+# Inicializa el driver pasando el servicio y las opciones
+driver = webdriver.Chrome(service=service, options=chrome_options)
 
 
 # Accede a la web
@@ -52,7 +58,7 @@ try:
     disponibles = int(disponibles.strip())
     print(f"Hay {disponibles} prácticas disponibles")
 
-    if disponibles >=0:
+    if disponibles > 0:
         enviar_mail(disponibles)
 
 except Exception as e:
