@@ -53,7 +53,7 @@ try:
         disponibles = int(disponibles.strip())
 
         if disponibles >= 0:
-            enviar_mail(disponibles)
+            enviar_mail(3)
         else:
             print("No hay prácticas disponibles por ahora.")
         
