@@ -51,7 +51,7 @@ try:
     disponibles = int(disponibles.strip())
     print(f"Hay {disponibles} prácticas disponibles")
 
-    if disponibles > 0:
+    if disponibles >=0:
         enviar_mail(disponibles)
 
 except Exception as e:
