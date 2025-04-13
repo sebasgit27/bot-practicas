@@ -2,22 +2,12 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import smtplib
 from email.mime.text import MIMEText
 import os
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
-import subprocess
-
-# Instalar Chromium y dependencias necesarias
-def instalar_chrome():
-    subprocess.run(["apt-get", "update"])
-    subprocess.run(["apt-get", "install", "-y", "chromium-browser"])
-
-# Llamamos a la función para instalar Chrome en el entorno de Render
-instalar_chrome()
 
 # ✉️ Función para enviar el correo
 def enviar_mail(disponibles): 
@@ -32,6 +22,7 @@ def enviar_mail(disponibles):
 
 # Configuración del navegador sin interfaz
 chrome_options = Options()
+chrome_options.binary_location = "/usr/bin/chromium-browser"  # Especifica la ubicación de Chromium en Render
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
@@ -41,7 +32,6 @@ service = Service(ChromeDriverManager().install())
 
 # Inicializa el driver pasando el servicio y las opciones
 driver = webdriver.Chrome(service=service, options=chrome_options)
-
 
 # Accede a la web
 driver.get("https://app.practicavial.com/")
