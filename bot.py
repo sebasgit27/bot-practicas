@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import smtplib
+import time
 from email.mime.text import MIMEText
 import os
 
@@ -31,8 +32,7 @@ driver = webdriver.Chrome(service=service, options=chrome_options)
 try:
     # Acceso a la web
     driver.get("https://app.practicavial.com/")
-    WebDriverWait(driver, 15).until(EC.presence_of_element_located((By.ID, "username_input")))
-
+    time.sleep(2)
     # Login
     email_input = driver.find_element(By.ID, "username_input")
     password_input = driver.find_element(By.NAME, "password")
@@ -40,19 +40,23 @@ try:
     password_input.send_keys(os.getenv("PV_PASS"))
     password_input.send_keys(Keys.RETURN)
 
+    time.sleep(2)
     # Ir al calendario
-    WebDriverWait(driver, 15).until(EC.url_contains("mi-calendario"))
-    
+    driver.get("https://app.practicavial.com/mi-calendario")
+    time.sleep(2)
     # Revisar disponibilidad
+    
     try:
-        disponibles_element = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "available-example"))
-        )
-        disponibles = int(disponibles_element.text.strip())
-        print(f"Prácticas disponibles: {disponibles}")
-        
+        disponibles = driver.find_element(By.CLASS_NAME, "available-example").text
+
+        # Limpiamos espacios y lo convertimos a número
+        disponibles = int(disponibles.strip())
+
         if disponibles >= 0:
             enviar_mail(disponibles)
+        else:
+            print("No hay prácticas disponibles por ahora.")
+        
     except:
         disponibles = 0
         print("No se encontraron prácticas disponibles")
