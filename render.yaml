@@ -1,0 +1,7 @@
+services:
+  - type: cron
+    name: bot-practicas
+    env: python
+    buildCommand: ""
+    startCommand: python bot.py
+    schedule: "*/15 * * * *"  # Esto lo ejecuta cada 15 minutos
